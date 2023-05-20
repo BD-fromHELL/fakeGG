@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface PostsRepository extends JpaRepository<Posts, Long> {
 
-    /**
-     * 게시글 목록 : 전체 게시글을 10개씩 끊어서 return
-     */
-    List<Posts> findAll();
+//    /**
+//     * 게시글 목록 : 전체 게시글을 10개씩 끊어서 return
+//     */
+//    List<Posts> findAll();
 
 }
