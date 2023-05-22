@@ -8,11 +8,7 @@ import com.BDFH.fakeGG.entity.Posts;
 import com.BDFH.fakeGG.service.PostsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -39,9 +35,15 @@ public class PostsController {
         return postsService.postPosts(request);
     }
 
-    @DeleteMapping("/")
-    private String deletePosts(){
-        return "삭제완료~~";
+
+    /**
+     * 게시글 지우기 : id에 해당하는 게시글을 삭제
+     */
+    @DeleteMapping("/posts/{postsId}")
+    public String deletePosts(@PathVariable Long postsId){
+            postsService.deletePosts(postsId);
+        return "삭제완료";
     }
+
 
 }
