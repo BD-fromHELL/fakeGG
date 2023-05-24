@@ -1,9 +1,9 @@
 package com.BDFH.fakeGG.service;
 
-import com.BDFH.fakeGG.dto.ArticleResponseDTO;
-import com.BDFH.fakeGG.dto.PostArticleRequestDTO;
+import com.BDFH.fakeGG.dto.ArticleResponseDto;
+import com.BDFH.fakeGG.dto.PostArticleRequestDto;
 import com.BDFH.fakeGG.entity.Article;
-import com.BDFH.fakeGG.exception.NotFoundPostsException;
+import com.BDFH.fakeGG.exception.NotFoundArticleException;
 import com.BDFH.fakeGG.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,10 +24,10 @@ public class ArticleService {
      * 게시글 목록 : 전체 게시글을 10개씩 끊어서 return. List로 return
      */
     @Transactional(readOnly = true)
-    public List<ArticleResponseDTO> findAll(Pageable pageable) {
+    public List<ArticleResponseDto> findAll(Pageable pageable) {
         Page<Article> entity = articleRepository.findAll(pageable);
         return entity.stream()
-                .map(ArticleResponseDTO::new)
+                .map(ArticleResponseDto::new)
                 .collect(Collectors.toList());
     }
 
@@ -35,7 +35,7 @@ public class ArticleService {
      * 게시글 작성
      */
     @Transactional
-    public Article postArticle(PostArticleRequestDTO request) {
+    public Article postArticle(PostArticleRequestDto request) {
         Article article = Article.builder()
                 .title(request.getTitle())
                 .contents(request.getContents())
@@ -49,7 +49,7 @@ public class ArticleService {
     @Transactional
     public void deleteArticle(Long articleId) {
         Article article = articleRepository.findById(articleId)
-                .orElseThrow(() -> new NotFoundPostsException("게시글이 존재하지 않습니다"));
+                .orElseThrow(() -> new NotFoundArticleException("게시글이 존재하지 않습니다"));
         articleRepository.delete(article);
     }
 }

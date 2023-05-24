@@ -1,23 +1,23 @@
 package com.BDFH.fakeGG.exception;
 
-public class NotFoundPostsException extends RuntimeException{
+public class NotFoundArticleException extends RuntimeException{
 
-    public NotFoundPostsException() {
+    public NotFoundArticleException() {
     }
 
-    public NotFoundPostsException(String message) {
+    public NotFoundArticleException(String message) {
         super(message);
     }
 
-    public NotFoundPostsException(String message, Throwable cause) {
+    public NotFoundArticleException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public NotFoundPostsException(Throwable cause) {
+    public NotFoundArticleException(Throwable cause) {
         super(cause);
     }
 
-    public NotFoundPostsException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public NotFoundArticleException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }
