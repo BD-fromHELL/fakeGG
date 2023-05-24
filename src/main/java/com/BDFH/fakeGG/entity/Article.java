@@ -12,10 +12,11 @@ import java.util.List;
 @AllArgsConstructor
 public class Article {
 
+//    mappedBy 설정 다시
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long
-            id;
+    @Column(name = "article_id")
+    private Long id;
 
     private String title;
 
