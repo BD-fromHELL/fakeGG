@@ -1,15 +1,15 @@
 package com.BDFH.fakeGG.dto;
 
-import com.BDFH.fakeGG.entity.Posts;
+import com.BDFH.fakeGG.entity.Article;
 import lombok.Getter;
 
 @Getter
-public class PostsResponseDTO {
+public class ArticleResponseDto {
     private Long id;
     private String title;
     private String contents;
 
-    public PostsResponseDTO(Posts entity) {
+    public ArticleResponseDto(Article entity) {
         this.id = entity.getId();
         this.title = entity.getTitle();
         this.contents = entity.getContents();
