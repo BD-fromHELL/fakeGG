@@ -24,8 +24,8 @@ public class ArticleController {
      * 사용법 : /posts?size=원하는size&page=원하는page
      */
 
-    @GetMapping("/posts")
-    public ArticleResponseDto postsList(@PageableDefault(size=1) Pageable pageable){
+    @GetMapping("/article")
+    public ArticleResponseDto postsList(Pageable pageable){
         ArticleResponseDto articles = articleService.findArticles(pageable);
         return articles;
     }
