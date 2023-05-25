@@ -1,14 +1,14 @@
 package com.BDFH.fakeGG.service;
 
-import com.BDFH.fakeGG.repository.UserRepository;
+import com.BDFH.fakeGG.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class MemberService {
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
 
 
 }

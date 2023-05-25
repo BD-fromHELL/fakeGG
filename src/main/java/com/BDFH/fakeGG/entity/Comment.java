@@ -31,7 +31,7 @@ public class Comment {
 
     @ManyToOne
     @JoinColumn(name = "writer_id")
-    private User writer;
+    private Member writer;
 
     @ManyToOne
     @JoinColumn(name = "article_id")
