@@ -4,16 +4,15 @@ import com.BDFH.fakeGG.dto.CommentResponseDto;
 import com.BDFH.fakeGG.dto.PostCommentRequestDto;
 import com.BDFH.fakeGG.entity.Article;
 import com.BDFH.fakeGG.entity.Comment;
-import com.BDFH.fakeGG.entity.User;
+import com.BDFH.fakeGG.entity.Member;
 import com.BDFH.fakeGG.exception.NotFoundArticleException;
 import com.BDFH.fakeGG.repository.ArticleRepository;
 import com.BDFH.fakeGG.repository.CommentRepository;
-import com.BDFH.fakeGG.repository.UserRepository;
+import com.BDFH.fakeGG.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,13 +20,13 @@ import java.util.stream.Collectors;
 // 댓글 대댓글 수정
 public class CommentService {
     private final CommentRepository commentRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final ArticleRepository articleRepository;
 
     public CommentResponseDto postComment(PostCommentRequestDto request){
         Article article = articleRepository.findById(request.getArticleId())
                 .orElseThrow(() -> new NotFoundArticleException("게시글이 없다라.. 이상하군"));;
-        User user = userRepository.findByUsername(request.getUsername())
+        Member user = memberRepository.findByMemberName(request.getMemberName())
                 .orElseThrow(() -> new NullPointerException("널널~하네"));
         Comment comment;
 
