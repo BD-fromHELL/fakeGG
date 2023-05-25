@@ -14,13 +14,10 @@ public class Article {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long
-            id;
+    private Long id;
 
     private String title;
 
     private String contents;
 
-    @OneToMany
-    private List<Comment> comments;
 }
