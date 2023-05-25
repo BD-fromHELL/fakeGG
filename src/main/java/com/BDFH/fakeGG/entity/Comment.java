@@ -15,8 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 //    cascade 설정다시
 public class Comment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
     private Long id;
 

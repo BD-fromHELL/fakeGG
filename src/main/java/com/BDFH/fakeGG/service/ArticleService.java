@@ -21,15 +21,25 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
 
     /**
-     * 게시글 목록 : 전체 게시글을 10개씩 끊어서 return. List로 return
+     * 게시글 목록 : 전체 게시글을 10개씩 끊어서 return.
+     * 페이지 내비게이션바에 나타낼 현재페이지, 시작페이지, 끝페이지를 같이 전달
      */
     @Transactional(readOnly = true)
-    public List<ArticleResponseDto> findAll(Pageable pageable) {
+    public ArticleResponseDto findArticles(Pageable pageable) {
         Page<Article> entity = articleRepository.findAll(pageable);
-        return entity.stream()
-                .map(ArticleResponseDto::new)
-                .collect(Collectors.toList());
+        int nowPage = entity.getPageable().getPageNumber()+1;
+        int startPage = Math.max(nowPage - 4, 1);
+        int endPage = Math.min(nowPage + 5, entity.getTotalPages());
+
+        ArticleResponseDto articleResponseDto = ArticleResponseDto.builder()
+                .page(entity.getContent())
+                .nowPage(nowPage)
+                .startPage(startPage)
+                .endPage(endPage)
+                .build();
+        return articleResponseDto;
     }
+
 
     /**
      * 게시글 작성

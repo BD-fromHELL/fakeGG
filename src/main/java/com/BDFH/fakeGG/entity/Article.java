@@ -22,6 +22,4 @@ public class Article {
 
     private String contents;
 
-    @OneToMany
-    private List<Comment> comments;
 }

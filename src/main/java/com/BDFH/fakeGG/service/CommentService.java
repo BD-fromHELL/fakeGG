@@ -26,6 +26,7 @@ public class CommentService {
     public CommentResponseDto postComment(PostCommentRequestDto request){
         Article article = articleRepository.findById(request.getArticleId())
                 .orElseThrow(() -> new NotFoundArticleException("게시글이 없다라.. 이상하군"));;
+
         Member user = memberRepository.findByMemberName(request.getMemberName())
                 .orElseThrow(() -> new NullPointerException("널널~하네"));
         Comment comment;
