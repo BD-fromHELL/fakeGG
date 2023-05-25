@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Data
 public class PostCommentRequestDto {
-    private String username;
+    private String memberName;
     private Long articleId;
     private Long parentsId;
     private String contents;
