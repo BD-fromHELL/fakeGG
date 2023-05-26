@@ -19,21 +19,23 @@ public class Comment {
     @Column(name = "comment_id")
     private Long id;
 
-    private String contents;
+    private String writer;
 
-    @OneToMany(mappedBy = "parents",cascade = CascadeType.ALL)
-    private List<Comment> childComments;
+    private String contents;
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
-    private Comment parents;
-
-    @ManyToOne
-    @JoinColumn(name = "writer_id")
-    private Member writer;
+    private Comment parentComment;
 
     @ManyToOne
     @JoinColumn(name = "article_id")
     private Article article;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentComment")
+    private List<Comment> childComments;
+
+    private int likes;
+    private int dislikes;
+
 
 }

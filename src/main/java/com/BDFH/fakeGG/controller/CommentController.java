@@ -15,7 +15,7 @@ public class CommentController {
     private final CommentService commentService;
 
     /*
-    댓글 보여주기(미완성
+    댓글 보여주기
      */
 
     @GetMapping("/article/{articleId}/comment")
@@ -37,7 +37,7 @@ public class CommentController {
     댓글 삭제
      */
     @DeleteMapping("/comment/{commentId}")
-    public Comment deleteComment(@PathVariable Long commentId){
+    public CommentResponseDto deleteComment(@PathVariable Long commentId){
         return commentService.deleteComment(commentId);
     }
 
@@ -47,8 +47,8 @@ public class CommentController {
      */
     @PostMapping("/article/{articleId}/comment/{commentId}/comment")
     public CommentResponseDto postCocoment(@PathVariable Long articleId, @PathVariable Long commentId, @RequestBody PostCommentRequestDto request){
-        request.setParentsId(commentId);
         request.setArticleId(articleId);
+        request.setParentsCommentId(commentId);
         return commentService.postComment(request);
     }
 }
