@@ -22,4 +22,10 @@ public class Article {
 
     private String contents;
 
+    @ManyToOne
+    @JoinColumn(name = "writer_id")
+    private Member writer;
+
+    @OneToMany
+    private List<Comment> comments;
 }
