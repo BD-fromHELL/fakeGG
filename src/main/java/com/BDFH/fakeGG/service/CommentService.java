@@ -12,56 +12,73 @@ import com.BDFH.fakeGG.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-// 댓글 대댓글 수정
 public class CommentService {
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
     private final ArticleRepository articleRepository;
 
-    public CommentResponseDto postComment(PostCommentRequestDto request){
+    public CommentResponseDto postComment(PostCommentRequestDto request) {
         Article article = articleRepository.findById(request.getArticleId())
                 .orElseThrow(() -> new NotFoundArticleException("게시글이 없다라.. 이상하군"));;
 
-        Member user = memberRepository.findByMemberName(request.getMemberName())
-                .orElseThrow(() -> new NullPointerException("널널~하네"));
+//        Member user = memberRepository.findByMemberName(request.getMemberName())
+//                .orElseThrow(() -> new NullPointerException("널널~하네"));
+        Long parentsCommentId = request.getParentsCommentId();
+
         Comment comment;
 
-        if(request.getParentsId() != null){
-            Comment parents = commentRepository.findById(request.getParentsId())
-                    .orElseThrow(() -> new NullPointerException());
+        if (parentsCommentId != null) {  // 대댓글이면
+            Comment parentsComment = commentRepository.findById(parentsCommentId)
+                    .orElseThrow(() -> new NullPointerException("존재하지 않는 댓글인데요"));
+            if (parentsComment.getParentComment() != null) {
+                new Exception("엥 이건 대댓글인데요");
+            }
             comment = Comment.builder()
-                    .writer(user)
+                    .writer(request.getMemberName())
                     .contents(request.getContents())
+                    .likes(0)
+                    .dislikes(0)
                     .article(article)
-                    .parents(parents)
+                    .parentComment(parentsComment)
+                    .childComments(new ArrayList<Comment>())
                     .build();
-        } else {
+
+            List<Comment> childComments = parentsComment.getChildComments();
+            childComments.add(comment);
+            commentRepository.save(parentsComment);
+
+        } else {  // 댓글이면
             comment = Comment.builder()
-                .writer(user)
-                .contents(request.getContents())
-                .article(article)
-                .build();
+                    .writer(request.getMemberName())
+                    .contents(request.getContents())
+                    .likes(0)
+                    .dislikes(0)
+                    .article(article)
+                    .childComments(new ArrayList<Comment>())
+                    .build();
         }
 
         commentRepository.save(comment);
         return new CommentResponseDto(comment);
     }
 
-    public Comment deleteComment(Long commentId){
+    public CommentResponseDto deleteComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new NullPointerException("널널~하네"));
+        CommentResponseDto commentResponseDto = new CommentResponseDto(comment);
         commentRepository.deleteById(commentId);
 
-        return comment;
+        return commentResponseDto;
     }
 
     public List<CommentResponseDto> getComments(Long articleId) {
-        List<Comment> comments = commentRepository.findByArticleId(articleId);
+        List<Comment> comments = commentRepository.findByArticleIdAndParentCommentIdIsNull(articleId);
         return comments.stream().map(CommentResponseDto::new).collect(Collectors.toList());
     }
 }

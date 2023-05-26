@@ -7,6 +7,6 @@ import lombok.Getter;
 public class PostCommentRequestDto {
     private String memberName;
     private Long articleId;
-    private Long parentsId;
+    private Long parentsCommentId;
     private String contents;
 }
