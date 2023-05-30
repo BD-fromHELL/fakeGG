@@ -1,6 +1,7 @@
 package com.BDFH.fakeGG.service;
 
 import com.BDFH.fakeGG.entity.Summoner;
+import com.BDFH.fakeGG.model.EntriesModel;
 import com.BDFH.fakeGG.model.SummonerModel;
 import com.BDFH.fakeGG.repository.SummonerRepository;
 import com.google.gson.Gson;
@@ -34,7 +35,6 @@ public class RiotApiService {
             BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
 
             StringBuilder sb = new StringBuilder();
-            System.out.println("connection!");
             String input = "";
             while ((input = br.readLine()) != null) {
                 sb.append(input);
@@ -54,7 +54,6 @@ public class RiotApiService {
 
             String tempName = summonerName.replace(" ", "").toLowerCase();
 
-
             Summoner summonerEntity = summonerRepository.findByName(tempName);
 
             Summoner summoner;
@@ -73,7 +72,7 @@ public class RiotApiService {
                         .build();
 
             } else {
-
+                System.out.println("summonerEntity !not! null");
                 summoner = Summoner.builder()
                         .id(summonerEntity.getId())
                         .summonerId(summonerModel.getId())
@@ -98,81 +97,38 @@ public class RiotApiService {
         return null;
     }
 
-//    // 소환사의 랭크 정보 불러오기
-//    public Summoner getEntriesBySummonerName(String summonerId, String apiKey) {
-//        try {
-//            URL url = new URL("/lol/league/v4/entries/by-summoner/" + summonerId
-//                    + "?api_key=" + apiKey);
-//
-//
-//            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-//
-//            BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
-//
-//            StringBuilder sb = new StringBuilder();
-//
-//            String input = "";
-//            while ((input = br.readLine()) != null) {
-//                sb.append(input);
-//            }
-//
-//            Gson gson = new Gson();
-//
-//            Type listType = new TypeToken<ArrayList<ApiEntry>>() {
-//            }.getType();
-//
-//            List<ApiEntry> apiEntries = gson.fromJson(sb.toString(), listType);
-//
-//            if (apiEntries == null || apiEntries.size() == 0) {
-//                return null;
-//            }
-//
-//            for (ApiEntry apiEntry : apiEntries) {
-//                String division = "1";
-//                if (apiEntry.getRank().equals("I")) {
-//                    division = "1";
-//                } else if (apiEntry.getRank().equals("II")) {
-//                    division = "2";
-//                } else if (apiEntry.getRank().equals("III")) {
-//                    division = "3";
-//                } else if (apiEntry.getRank().equals("IV")) {
-//                    division = "4";
-//                }
-//
-//                EntryModel entryEntity = entryRepository.findBySummonerIdAndQueueType(apiEntry.getSummonerId(),
-//                        apiEntry.getQueueType());
-//
-//                EntryModel entryModel = null;
-//
-//                if (entryEntity == null) {
-//
-//                    entryModel = EntryModel.builder().leagueId(apiEntry.getLeagueId())
-//                            .leaguePoints(apiEntry.getLeaguePoints()).queueType(apiEntry.getQueueType())
-//                            .summonerId(apiEntry.getSummonerId()).summonerName(apiEntry.getSummonerName())
-//                            .rank(apiEntry.getRank()).tier(apiEntry.getTier()).wins(apiEntry.getWins())
-//                            .losses(apiEntry.getLosses()).tierRankId(apiEntry.getTier().toLowerCase() + "_" + division)
-//                            .build();
-//                } else {
-//
-//                    entryModel = EntryModel.builder().id(entryEntity.getId()).leagueId(apiEntry.getLeagueId())
-//                            .leaguePoints(apiEntry.getLeaguePoints()).queueType(apiEntry.getQueueType())
-//                            .summonerId(apiEntry.getSummonerId()).summonerName(apiEntry.getSummonerName())
-//                            .rank(apiEntry.getRank()).tier(apiEntry.getTier()).wins(apiEntry.getWins())
-//                            .losses(apiEntry.getLosses()).tierRankId(apiEntry.getTier().toLowerCase() + "_" + division)
-//                            .build();
-//
-//                }
-//
-//                entryRepository.save(entryModel);
-//
-//            }
-//
-//            return apiEntries;
-//
-//        } catch (Exception e) {
-//            System.out.println("엥 ???? 소환사 랭크 정보를 불러오는 데에 실패했음!");
-//        }
-//
-//        return null;
-//    }
+    // 소환사의 랭크 정보 불러오기
+    public EntriesModel getEntries(String summonerId) {
+        try {
+            URL url = new URL("https://kr.api.riotgames.com/lol/league/v4/entries/by-summoner/" + summonerId
+                    + "?api_key=" + apiKey);
+
+
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
+
+            StringBuilder sb = new StringBuilder();
+            String input = "";
+            while ((input = br.readLine()) != null) {
+                sb.append(input);
+            }
+
+            Gson gson = new Gson();
+            EntriesModel[] arr = gson.fromJson(sb.toString(),EntriesModel[].class);
+
+            EntriesModel entriesModel = arr[0];
+
+            return entriesModel;
+
+        } catch (Exception e) {
+            System.out.println(e);
+            System.out.println("엥 ???? 소환사 랭크 정보를 불러오는 데에 실패했음!");
+        }
+
+        return null;
+    }
+
+    // 소환환사의 전적 정보 불러오기
+
 }

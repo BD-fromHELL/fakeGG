@@ -1,6 +1,7 @@
 package com.BDFH.fakeGG.controller;
 
 import com.BDFH.fakeGG.entity.Summoner;
+import com.BDFH.fakeGG.model.EntriesModel;
 import com.BDFH.fakeGG.service.RiotApiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,4 +23,8 @@ public class RiotApiController {
         return riotApiService.getSummoner(summonerName);
     }
 
+    @GetMapping("summoner/dd/{summonerId}")
+    public EntriesModel getSummonerRank(@PathVariable String summonerId) {
+        return riotApiService.getEntries(summonerId);
+    }
 }
