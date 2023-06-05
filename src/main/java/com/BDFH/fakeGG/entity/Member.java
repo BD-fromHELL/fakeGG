@@ -1,12 +1,17 @@
 package com.BDFH.fakeGG.entity;
 
+import com.BDFH.fakeGG.auth.MemberDetails;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
 @Getter
+@Builder
+@AllArgsConstructor
 public class Member {
     @Id
     @Column(name = "member_email", nullable = false, unique = true)
@@ -20,5 +25,8 @@ public class Member {
 
     @Column(nullable = false)
     private Long memberBirth;
+
+
+
 
 }
