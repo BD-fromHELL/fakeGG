@@ -1,4 +1,4 @@
-package com.BDFH.fakeGG.model;
+package com.BDFH.fakeGG.model.riotApi;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,10 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class SummonerModel {
-
     private String accountId;
     private Long profileIconId;
-    private Long revisionDate;
     private String name;
     private String id;
     private String puuid;
