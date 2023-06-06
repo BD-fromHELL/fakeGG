@@ -1,6 +1,7 @@
 package com.BDFH.fakeGG.auth.config;
 
 import com.BDFH.fakeGG.auth.jwt.JwtAuthenticationFilter;
+import com.BDFH.fakeGG.auth.jwt.RefreshTokenProvider;
 import com.BDFH.fakeGG.auth.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +22,7 @@ import static org.springframework.boot.autoconfigure.security.servlet.PathReques
 @EnableWebSecurity
 public class SecurityConfig {
     private final TokenProvider tokenProvider;
+    private final RefreshTokenProvider refreshTokenProvider;
 
     /**
      * 스프링 시큐리티 비활성화 : 정적 리소스, h2콘솔창, 회원가입에 대해서 스프링 시큐리티를 비활성화함
@@ -29,8 +31,7 @@ public class SecurityConfig {
     public WebSecurityCustomizer configure(){
         return (web) -> web.ignoring()
                 .requestMatchers(toH2Console())
-                .requestMatchers("/static/**")
-                .requestMatchers("/signup");
+                .requestMatchers("/static/**","/signup","/login");
     }
 
 
@@ -56,10 +57,10 @@ public class SecurityConfig {
                         // anyRequest() : requestMatchers를 제외한 모든 요청을 의미함
                         // authenticated() : springSecurityContext 내에서 인증이 완료되어야지 접근할 수 있음을 의미
                         .anyRequest().authenticated())
-                // 폼 로그인 사용 안함
+                // 폼 로그인 사용 안함, 따라서 UsernamePasswordAuthenticationFilter도 작동하지 않음
                 .formLogin(formLogin -> formLogin.disable())
                 // 토큰 유효성을 검사하고 authentication을 생성하는 필터를 추가
-                .addFilterBefore(new JwtAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(tokenProvider, refreshTokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
