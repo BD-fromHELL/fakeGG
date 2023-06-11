@@ -2,21 +2,29 @@ package com.BDFH.fakeGG.auth.jwt;
 
 import com.BDFH.fakeGG.auth.entity.RefreshToken;
 import com.BDFH.fakeGG.auth.repository.RefreshTokenRepository;
+import com.BDFH.fakeGG.exception.TokenExpiredException;
+import com.BDFH.fakeGG.exception.TokenInvalidException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Optional;
 
 
@@ -83,7 +91,7 @@ public class RefreshTokenProvider {
      *   아니라면 error를 발생시켜 재로그인을 시킴
      */
     @Transactional
-    public String validateRefreshToken(HttpServletRequest request){
+    public String validateRefreshToken(HttpServletRequest request, HttpServletResponse response) throws TokenExpiredException {
         String refreshToken = getRefreshToken(request);
         // 1. 유효성 검사를 실시
         try {
@@ -92,20 +100,19 @@ public class RefreshTokenProvider {
                     .build()
                     .parseClaimsJws(refreshToken);
 
-        // 만료 기간이 지났다면, 재로그인 시킴
+            // 만료 기간이 지났다면, 재로그인 시킴
         } catch (ExpiredJwtException expiredJwtException) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인 기간이 만료되었습니다. 다시 로그인 하세요");
-        // 토큰이 유효하지 않다면, 재로그인 시킴
+            // 토큰이 유효하지 않다면, 재로그인 시킴
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인에 실패하였습니다. 다시 로그인 하세요");
         }
 
         // 2. db에 저장된 토큰과 일치하는지 확인 -> 일치하지 않는다면 error 발생
-        RefreshToken currentToken = refreshTokenRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(() -> new IllegalArgumentException("로그인에 실패하였습니다. 다시 로그인 하세요"));
-
-        // 3. 모든 유효성 검사를 통과했다면 email을 리턴
-        return currentToken.getMemberEmail();
+        RefreshToken currentRefreshToken = refreshTokenRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new TokenInvalidException("로그아웃 되었습니다. 다시 로그인 해주세요"));
+            // 3. 모든 유효성 검사를 통과했다면 email을 리턴
+        return currentRefreshToken.getMemberEmail();
     }
 
 
@@ -122,6 +129,5 @@ public class RefreshTokenProvider {
         }
         return null;
     }
-
 
 }

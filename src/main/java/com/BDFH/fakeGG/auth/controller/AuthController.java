@@ -5,6 +5,7 @@ import com.BDFH.fakeGG.auth.dto.SignupRequestDto;
 import com.BDFH.fakeGG.auth.dto.TokenResponseDto;
 import com.BDFH.fakeGG.auth.security.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,8 +40,8 @@ public class AuthController {
      * 액세스 토큰 재발급 : 액세스 토큰이 만료되었을 때 재발급 받는다
      */
     @GetMapping("/newtoken")
-    public ResponseEntity<TokenResponseDto> reGenerate(HttpServletRequest request) {
-        TokenResponseDto tokenResponseDto = authService.getNewToken(request);
+    public ResponseEntity<TokenResponseDto> reGenerate(HttpServletRequest request, HttpServletResponse response) {
+        TokenResponseDto tokenResponseDto = authService.getNewToken(request, response);
         return new ResponseEntity<>(tokenResponseDto, HttpStatus.OK);
     }
 }
