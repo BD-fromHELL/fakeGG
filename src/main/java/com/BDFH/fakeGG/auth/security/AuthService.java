@@ -12,6 +12,7 @@ import com.BDFH.fakeGG.exception.WrongPasswordException;
 import com.BDFH.fakeGG.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -79,15 +80,15 @@ public class AuthService {
     /**
      * AccessToken 재발급 : access 토큰이 만료되었다면 refresh 토큰을 확인하고 재발급함
      */
-    public TokenResponseDto getNewToken(HttpServletRequest request) {
-        System.out.println("새로운 토큰이 발급되었습니다");
+    public TokenResponseDto getNewToken(HttpServletRequest request, HttpServletResponse response) {
         // request에서 refreshToken을 추출
         String refreshToken = refreshTokenProvider.getRefreshToken(request);
         // refresh 토큰을 유효성 검사하고, 통과한다면 사용자 email을 추출
-        String email = refreshTokenProvider.validateRefreshToken(request);
+        String email = refreshTokenProvider.validateRefreshToken(request, response);
         // 유효성 검사에서 error가 발생하지 않는다면 새로운 토큰을 생성
         String newAccessToken = tokenProvider.createToken(email);
 
+        System.out.println("새로운 토큰이 발급되었습니다");
         return TokenResponseDto.builder()
                 .accessToken(newAccessToken)
                 .refreshToken(refreshToken)
