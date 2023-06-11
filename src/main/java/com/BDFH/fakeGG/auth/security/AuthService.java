@@ -1,7 +1,7 @@
 package com.BDFH.fakeGG.auth.security;
 
 import com.BDFH.fakeGG.auth.dto.LoginRequestDto;
-import com.BDFH.fakeGG.auth.dto.LoginResponseDto;
+import com.BDFH.fakeGG.auth.dto.TokenResponseDto;
 import com.BDFH.fakeGG.auth.dto.SignupRequestDto;
 import com.BDFH.fakeGG.auth.jwt.RefreshTokenProvider;
 import com.BDFH.fakeGG.auth.jwt.TokenProvider;
@@ -10,12 +10,13 @@ import com.BDFH.fakeGG.exception.AlreadyMemberExistException;
 import com.BDFH.fakeGG.exception.NotExistMemberException;
 import com.BDFH.fakeGG.exception.WrongPasswordException;
 import com.BDFH.fakeGG.repository.MemberRepository;
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.security.auth.login.LoginException;
+import org.springframework.util.StringUtils;
 
 @RequiredArgsConstructor
 @Service
@@ -52,12 +53,11 @@ public class AuthService {
     }
 
 
-
     /**
-     * 로그인을 성공하면 토큰 발급
+     * 로그인 : 로그인을 성공하면 토큰 발급
      */
     @Transactional
-    public LoginResponseDto login(LoginRequestDto loginRequestDto) {
+    public TokenResponseDto login(LoginRequestDto loginRequestDto) {
         String email = loginRequestDto.getEmail();
         String pw = loginRequestDto.getPassword();
 
@@ -72,6 +72,28 @@ public class AuthService {
         // 토큰을 발급
         String accessToken = tokenProvider.createToken(email);
         String refreshToken = refreshTokenProvider.createRefreshToken(email);
-        return new LoginResponseDto(accessToken, refreshToken);
+        return new TokenResponseDto(accessToken, refreshToken);
     }
+
+
+    /**
+     * AccessToken 재발급 : access 토큰이 만료되었다면 refresh 토큰을 확인하고 재발급함
+     */
+    public TokenResponseDto getNewToken(HttpServletRequest request) {
+        System.out.println("새로운 토큰이 발급되었습니다");
+        // request에서 refreshToken을 추출
+        String refreshToken = refreshTokenProvider.getRefreshToken(request);
+        // refresh 토큰을 유효성 검사하고, 통과한다면 사용자 email을 추출
+        String email = refreshTokenProvider.validateRefreshToken(request);
+        // 유효성 검사에서 error가 발생하지 않는다면 새로운 토큰을 생성
+        String newAccessToken = tokenProvider.createToken(email);
+
+        return TokenResponseDto.builder()
+                .accessToken(newAccessToken)
+                .refreshToken(refreshToken)
+                .build();
+    }
+
+
+
 }
