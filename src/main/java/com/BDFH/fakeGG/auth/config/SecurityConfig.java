@@ -1,5 +1,6 @@
 package com.BDFH.fakeGG.auth.config;
 
+import com.BDFH.fakeGG.auth.jwt.ExceptionHandlerFilter;
 import com.BDFH.fakeGG.auth.jwt.JwtAuthenticationFilter;
 import com.BDFH.fakeGG.auth.jwt.RefreshTokenProvider;
 import com.BDFH.fakeGG.auth.jwt.TokenProvider;
@@ -31,7 +32,7 @@ public class SecurityConfig {
     public WebSecurityCustomizer configure(){
         return (web) -> web.ignoring()
                 .requestMatchers(toH2Console())
-                .requestMatchers("/static/**","/signup","/login");
+                .requestMatchers("/static/**","/signup","/login", "/newtoken");
     }
 
 
@@ -53,14 +54,16 @@ public class SecurityConfig {
                 // 인증 절차에 대한 설정을 시작 : 인증을 통과하면 200, 통과하지 못했다면 403(forbidden)
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         // requestMatchers() : 특정 url에 대해서 어덯게 인증처리를 할지 결정
-                        .requestMatchers("/login", "/signup").permitAll()
+                        .requestMatchers("/login", "/signup", "/newtoken").permitAll()
                         // anyRequest() : requestMatchers를 제외한 모든 요청을 의미함
                         // authenticated() : springSecurityContext 내에서 인증이 완료되어야지 접근할 수 있음을 의미
                         .anyRequest().authenticated())
                 // 폼 로그인 사용 안함, 따라서 UsernamePasswordAuthenticationFilter도 작동하지 않음
                 .formLogin(formLogin -> formLogin.disable())
-                // 토큰 유효성을 검사하고 authentication을 생성하는 필터를 추가
-                .addFilterBefore(new JwtAuthenticationFilter(tokenProvider, refreshTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                // 토큰 유효성을 검사하고 authentication을 생성하는 필터를 추가. 필터 추가 순서를 꼭 지켜야한다
+                .addFilterBefore(new JwtAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
+                // 토큰 만료 or 유효하지 않을 시 발생하는 에러를 다루는 필터를 추가
+                .addFilterBefore(new ExceptionHandlerFilter(), JwtAuthenticationFilter.class)
                 .build();
     }
 

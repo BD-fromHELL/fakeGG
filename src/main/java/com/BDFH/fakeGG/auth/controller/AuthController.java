@@ -1,21 +1,14 @@
 package com.BDFH.fakeGG.auth.controller;
 
-import com.BDFH.fakeGG.auth.MemberDetails;
 import com.BDFH.fakeGG.auth.dto.LoginRequestDto;
 import com.BDFH.fakeGG.auth.dto.SignupRequestDto;
-import com.BDFH.fakeGG.auth.jwt.RefreshTokenProvider;
-import com.BDFH.fakeGG.auth.dto.LoginResponseDto;
-import com.BDFH.fakeGG.auth.jwt.TokenProvider;
+import com.BDFH.fakeGG.auth.dto.TokenResponseDto;
 import com.BDFH.fakeGG.auth.security.AuthService;
-import com.BDFH.fakeGG.entity.Member;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,9 +20,9 @@ public class AuthController {
      * 로그인 : accessToken, refreshToken을 리턴
      */
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {
-        LoginResponseDto loginResponseDto = authService.login(loginRequestDto);
-        return new ResponseEntity<>(loginResponseDto, HttpStatus.OK);
+    public ResponseEntity<TokenResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {
+        TokenResponseDto tokenResponseDto = authService.login(loginRequestDto);
+        return new ResponseEntity<>(tokenResponseDto, HttpStatus.OK);
     }
 
 
@@ -39,5 +32,15 @@ public class AuthController {
     @PostMapping("/signup")
     public void signup(@RequestBody SignupRequestDto signupRequestDto) {
         authService.signUp(signupRequestDto);
+    }
+
+
+    /**
+     * 액세스 토큰 재발급 : 액세스 토큰이 만료되었을 때 재발급 받는다
+     */
+    @GetMapping("/newtoken")
+    public ResponseEntity<TokenResponseDto> reGenerate(HttpServletRequest request) {
+        TokenResponseDto tokenResponseDto = authService.getNewToken(request);
+        return new ResponseEntity<>(tokenResponseDto, HttpStatus.OK);
     }
 }
