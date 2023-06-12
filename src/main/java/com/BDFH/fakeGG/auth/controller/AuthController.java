@@ -18,7 +18,7 @@ public class AuthController {
 
 
     /**
-     * 로그인 : accessToken, refreshToken을 리턴
+     * 자체 로그인 : accessToken, refreshToken을 리턴
      */
     @PostMapping("/login")
     public ResponseEntity<TokenResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {

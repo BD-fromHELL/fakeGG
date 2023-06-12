@@ -100,10 +100,10 @@ public class RefreshTokenProvider {
                     .build()
                     .parseClaimsJws(refreshToken);
 
-            // 만료 기간이 지났다면, 재로그인 시킴
+        // 만료 기간이 지났다면, 재로그인 시킴
         } catch (ExpiredJwtException expiredJwtException) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인 기간이 만료되었습니다. 다시 로그인 하세요");
-            // 토큰이 유효하지 않다면, 재로그인 시킴
+        // 토큰이 유효하지 않다면, 재로그인 시킴
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인에 실패하였습니다. 다시 로그인 하세요");
         }
@@ -111,7 +111,7 @@ public class RefreshTokenProvider {
         // 2. db에 저장된 토큰과 일치하는지 확인 -> 일치하지 않는다면 error 발생
         RefreshToken currentRefreshToken = refreshTokenRepository.findByRefreshToken(refreshToken)
                 .orElseThrow(() -> new TokenInvalidException("로그아웃 되었습니다. 다시 로그인 해주세요"));
-            // 3. 모든 유효성 검사를 통과했다면 email을 리턴
+        // 3. 모든 유효성 검사를 통과했다면 email을 리턴
         return currentRefreshToken.getMemberEmail();
     }
 

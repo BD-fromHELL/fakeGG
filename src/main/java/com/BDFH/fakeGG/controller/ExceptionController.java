@@ -2,18 +2,21 @@ package com.BDFH.fakeGG.controller;
 
 import com.BDFH.fakeGG.exception.TokenInvalidException;
 import lombok.Data;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@ControllerAdvice
+@RestControllerAdvice
 @RestController
 public class ExceptionController {
 
     @ExceptionHandler(TokenInvalidException.class)
-    public ErrorResponse handleInvalidToken(TokenInvalidException e) {
+    public ResponseEntity<ErrorResponse> handleInvalidToken(TokenInvalidException e) {
         ErrorResponse errorResponse = new ErrorResponse(403, "please login again");
-        return errorResponse;
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
     }
 
 
