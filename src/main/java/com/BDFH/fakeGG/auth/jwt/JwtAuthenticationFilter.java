@@ -1,5 +1,6 @@
 package com.BDFH.fakeGG.auth.jwt;
 
+import com.BDFH.fakeGG.auth.oauth.OAuth2SuccessHandler;
 import com.BDFH.fakeGG.exception.TokenExpiredException;
 import com.BDFH.fakeGG.exception.TokenInvalidException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +12,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,6 +35,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final TokenProvider tokenProvider;
+    private static final Logger logger = LoggerFactory.getLogger(OAuth2SuccessHandler.class);
 
 
     /**
@@ -41,12 +45,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String AccessToken = tokenProvider.getAccessToken(request);
         if (AccessToken != null) {
+            logger.info("유저가 인증되었습니다");
             // 유효성 검사, error가 발생하지 않는다면 토큰이 유효하다는 뜻이다
             tokenProvider.validateToken(AccessToken);
-            // 토큰이 유효하다면 토큰을 사용하여 authentication을 생성
-
-            System.out.println("유저가 인증되었습니다");
-            // token으로 authentication을 생성하고 contextHolder에 담는다
+            // 토큰이 유효하다면 authentication을 생성하고 contextHolder에 담는다
             Authentication authentication = tokenProvider.createAuthentication(AccessToken);
             // SecurityContextHolder에 tokenProvider에서 만든 authentication를 인증 객체로 설정함
             SecurityContextHolder.getContext().setAuthentication(authentication);

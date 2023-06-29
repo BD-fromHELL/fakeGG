@@ -11,6 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
+import java.io.IOException;
+
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
@@ -20,7 +23,7 @@ public class AuthController {
     /**
      * 자체 로그인 : accessToken, refreshToken을 리턴
      */
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public ResponseEntity<TokenResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {
         TokenResponseDto tokenResponseDto = authService.login(loginRequestDto);
         return new ResponseEntity<>(tokenResponseDto, HttpStatus.OK);
@@ -30,7 +33,7 @@ public class AuthController {
     /**
      * 회원 가입 : db에 유저 정보를 저장
      */
-    @PostMapping("/signup")
+    @PostMapping("/accounts/signup")
     public void signup(@RequestBody SignupRequestDto signupRequestDto) {
         authService.signUp(signupRequestDto);
     }
