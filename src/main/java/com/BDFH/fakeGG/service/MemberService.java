@@ -1,6 +1,6 @@
 package com.BDFH.fakeGG.service;
 
-import com.BDFH.fakeGG.auth.MemberDetails;
+import com.BDFH.fakeGG.auth.security.MemberDetails;
 import com.BDFH.fakeGG.dto.MemberResponseDto;
 import com.BDFH.fakeGG.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;

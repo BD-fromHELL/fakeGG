@@ -1,4 +1,4 @@
-package com.BDFH.fakeGG.auth;
+package com.BDFH.fakeGG.auth.security;
 
 import com.BDFH.fakeGG.entity.Member;
 import org.springframework.security.core.GrantedAuthority;

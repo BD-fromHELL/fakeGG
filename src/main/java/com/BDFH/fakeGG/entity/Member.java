@@ -1,6 +1,5 @@
 package com.BDFH.fakeGG.entity;
 
-import com.BDFH.fakeGG.auth.MemberDetails;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
