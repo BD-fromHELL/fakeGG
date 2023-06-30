@@ -11,7 +11,6 @@ import java.util.Map;
 public class CustomOAuth2User extends DefaultOAuth2User {
     // email 필드를 추가
     private String email;
-
     /**
      * Constructs a {@code DefaultOAuth2User} using the provided parameters.
      *
@@ -25,4 +24,10 @@ public class CustomOAuth2User extends DefaultOAuth2User {
         super(authorities, attributes, nameAttributeKey);
         this.email = email;
     }
+
+    public String getEmail(){
+        return email;
+    }
+
+
 }
