@@ -1,7 +1,7 @@
 package com.BDFH.fakeGG.auth.oauth;
 
 import com.BDFH.fakeGG.auth.dto.TokenResponseDto;
-import com.BDFH.fakeGG.auth.jwt.ExceptionHandlerFilter;
+import com.BDFH.fakeGG.auth.security.ExceptionHandlerFilter;
 import com.BDFH.fakeGG.auth.jwt.RefreshTokenProvider;
 import com.BDFH.fakeGG.auth.jwt.TokenProvider;
 import com.BDFH.fakeGG.entity.Member;
@@ -16,9 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;

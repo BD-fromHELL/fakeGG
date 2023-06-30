@@ -1,6 +1,6 @@
 package com.BDFH.fakeGG.auth.config;
 
-import com.BDFH.fakeGG.auth.jwt.ExceptionHandlerFilter;
+import com.BDFH.fakeGG.auth.security.ExceptionHandlerFilter;
 import com.BDFH.fakeGG.auth.jwt.JwtAuthenticationFilter;
 import com.BDFH.fakeGG.auth.jwt.TokenProvider;
 import com.BDFH.fakeGG.auth.oauth.CustomOAuth2UserService;
@@ -8,8 +8,8 @@ import com.BDFH.fakeGG.auth.oauth.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,9 +18,8 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequest
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import java.util.logging.Logger;
-
 import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
+import static org.springframework.security.config.Customizer.*;
 
 @RequiredArgsConstructor
 @Configuration
@@ -49,8 +48,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                // 일단 cors는 사용하지 않음
-                .cors(cors -> cors.disable())
+                // cors 사용
+                .cors(withDefaults())
                 // Rest API를 사용하므로 csrf를 비활성화
                 .csrf(csrf -> csrf.disable())
                 // 토큰방식을 사용할것이므로, 서버에서 session을 관리하지 않는다는 의미. stateless로 설정함
