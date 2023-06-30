@@ -1,4 +1,4 @@
-package com.BDFH.fakeGG.auth.jwt;
+package com.BDFH.fakeGG.auth.security;
 
 import com.BDFH.fakeGG.exception.NotSignedUpMemberException;
 import com.BDFH.fakeGG.exception.TokenExpiredException;
