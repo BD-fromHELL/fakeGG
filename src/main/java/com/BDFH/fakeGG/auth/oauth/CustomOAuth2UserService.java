@@ -26,24 +26,34 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         logger.info("로그인 요청 성공");
         // request로부터 인증된 사용자 객체를 생성
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        // 생성한 사용자 객체로부터, 유저의 정보를 가져옴
+        // 생성한 사용자 객체로부터, 어떤 로그인을 사용했는지 가져옴
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         // OAuth2 로그인 시 키(PK)가 된느 값
         String userNameAttributeName = userRequest.getClientRegistration()
                 .getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
         // 소셜 로그인에서 제공하는 유저 정보(Json)
         Map<String, Object> attributes = oAuth2User.getAttributes();
-
+        String email = null;
 
 
         // 카카오 로그인
-        Map<String, Object> kakaoAccount = oAuth2User.getAttribute("kakao_account");
-        String kakao_email = (String) kakaoAccount.get("email");
+        if ( registrationId.equals("kakao")) {
+            Map<String, Object> kakaoAccount = oAuth2User.getAttribute("kakao_account");
+            String kakao_email = (String) kakaoAccount.get("email");
+            email = kakao_email;
+        } else
+        // 페이스북 로그인
+        {
+            Map<String, Object> facebookAccount = oAuth2User.getAttributes();
+            String facebook_email = (String) facebookAccount.get("email");
+            email = facebook_email;
+        }
+
+        // CustomOAuth2User를 리턴
         return new CustomOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
                 attributes,
                 userNameAttributeName,
-                kakao_email);
-
+                email);
     }
 }

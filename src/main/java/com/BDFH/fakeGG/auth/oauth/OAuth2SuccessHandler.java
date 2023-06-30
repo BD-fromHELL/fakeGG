@@ -33,17 +33,16 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final RefreshTokenProvider refreshTokenProvider;
     private final MemberRepository memberRepository;
     private final ObjectMapper objectMapper;
-    private final ExceptionHandlerFilter exceptionHandlerFilter;
-
-    private final OAuth2AuthorizedClientService authorizedClientService;
     private static final Logger logger = LoggerFactory.getLogger(OAuth2SuccessHandler.class);
+
+    private final CustomOAuth2UserService customOAuth2UserService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         // 소셜 로그인된 사용자로부터 email을 가져옴
-        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        Map<String,Object> accountInfo = oAuth2User.getAttribute("kakao_account");
-        String email = (String) accountInfo.get("email");
+        CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
+        String email = oAuth2User.getEmail();
+        logger.info("email = " + email);
         logger.info("소셜 로그인에 요청에 성공했습니다. 회원가입 여부를 확인합니다");
 
         // 로그인이 완료되었을 때, 회원가입 된 사용자라면 토큰을 발급해줌
