@@ -19,7 +19,6 @@ class RiotApiServiceTest {
     @Autowired
     RiotApiService riotApiService;
 
-
     @Test
     void 아캅스불러오기() {
         SummonerModel akaps = riotApiService.getSummoner("Akaps");

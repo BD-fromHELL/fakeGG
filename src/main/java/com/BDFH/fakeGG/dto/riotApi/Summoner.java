@@ -3,6 +3,7 @@ package com.BDFH.fakeGG.dto.riotApi;
 import lombok.*;
 
 @Getter
+@Setter
 public class Summoner {
 
     private String accountId;

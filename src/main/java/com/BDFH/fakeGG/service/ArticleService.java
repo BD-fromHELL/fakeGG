@@ -40,7 +40,12 @@ public class ArticleService {
         return articleResponseDto;
     }
 
+    public Article getArticleDetail(Long articleId){
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new NotFoundArticleException("게시글이 존재하지 않습니다"));;
 
+        return article;
+    }
     /**
      * 게시글 작성
      */
