@@ -14,7 +14,7 @@ public class ParticipantModel {
     private Integer championLevel;
     private String summonerName;
     private String rankTier;
-    private Long summonerLevel;  // 티어가 없으면 레벨로
+    private Integer summonerLevel;  // 티어가 없으면 레벨로
     private Integer summoner1Id;
     private Integer summoner2Id;
     private Integer rune1;
@@ -23,14 +23,14 @@ public class ParticipantModel {
     private Integer death;
     private Integer assist;
     private Float kda;
-    private Integer 킬관여;
-    private Integer 피해량;
-    private Integer 받은피해량;
-    private Integer 제어와드;
-    private Integer 와드설치;
-    private Integer 와드제거;
+    private Integer killParticipation;
+    private Integer damageDealt;
+    private Integer damageTaken;
+    private Integer detectorWardsPlaced;
+    private Integer wardsPlaced;
+    private Integer wardsKilled;
     private Integer cs;
-    private Float 분당cs;
+    private Float csPerMinute;
     private Integer item0;
     private Integer item1;
     private Integer item2;

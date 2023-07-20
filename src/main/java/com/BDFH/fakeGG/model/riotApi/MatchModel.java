@@ -19,5 +19,4 @@ public class MatchModel {
 
     private List<TeamModel> teams;
     private List<ParticipantModel> participants;
-
 }

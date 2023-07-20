@@ -1,14 +1,13 @@
 package com.BDFH.fakeGG.auth.config;
 
-import com.BDFH.fakeGG.auth.security.ExceptionHandlerFilter;
 import com.BDFH.fakeGG.auth.jwt.JwtAuthenticationFilter;
 import com.BDFH.fakeGG.auth.jwt.TokenProvider;
 import com.BDFH.fakeGG.auth.oauth.CustomOAuth2UserService;
 import com.BDFH.fakeGG.auth.oauth.OAuth2SuccessHandler;
+import com.BDFH.fakeGG.auth.security.ExceptionHandlerFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -18,8 +17,7 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequest
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
-import static org.springframework.security.config.Customizer.*;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @RequiredArgsConstructor
 @Configuration
@@ -32,18 +30,18 @@ public class SecurityConfig {
      * 스프링 시큐리티 비활성화 : 정적 리소스, h2콘솔창, 회원가입에 대해서 스프링 시큐리티를 비활성화함
      */
     @Bean
-    public WebSecurityCustomizer configure(){
+    public WebSecurityCustomizer configure() {
         return (web) -> web.ignoring()
-                .requestMatchers(toH2Console())
                 .requestMatchers("/static/**", "/accounts/signup", "/auth/login/**", "/newtoken")
                 .requestMatchers("/login/oauth2/kakao");
+
     }
 
 
     /**
      * Security Config
-     *   기존의 WebSecurityConfigurerAdapter를 extends받는 방식에서
-     *   SecurityFilterChain을 Bean등록해서 사용하는 방식으로 바뀜
+     * 기존의 WebSecurityConfigurerAdapter를 extends받는 방식에서
+     * SecurityFilterChain을 Bean등록해서 사용하는 방식으로 바뀜
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -65,7 +63,7 @@ public class SecurityConfig {
                 // oauth2Login을 사용
                 .oauth2Login(oauth2Login -> oauth2Login
                         // login시에 사용자 정보를 가져오는 엔드포인트와 서비스를 설정
-                        .userInfoEndpoint(userInfo-> userInfo.userService(customOAuth2UserService))
+                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                         // login 성공시 처리할 핸들러
                         .successHandler(oAuth2SuccessHandler))
                 // 폼 로그인 사용 안함, 따라서 UsernamePasswordAuthenticationFilter도 작동하지 않음
@@ -82,7 +80,7 @@ public class SecurityConfig {
      * 암호화 모듈
      */
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }

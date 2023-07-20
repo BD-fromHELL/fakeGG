@@ -17,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*",allowedHeaders = "*")
 public class ArticleController {
     private final ArticleService articleService;
 
@@ -25,13 +26,18 @@ public class ArticleController {
      * 사용법 : 원하는 page 번호만 쿼리형식으로 보내주면 됨
      */
 
-    @GetMapping("/article")
+    @GetMapping("/article/{page}")
     public ArticleResponseDto articleList(@PathVariable int page){
         Pageable pageable = PageRequest.of(page-1, 10);
         ArticleResponseDto articles = articleService.findArticles(pageable);
         return articles;
     }
 
+    @GetMapping("/article/detail/{articleId}")
+    public Article getArticleDetail(@PathVariable Long articleId){
+        Article article = articleService.getArticleDetail(articleId);
+        return article;
+    }
 
     /**
      * 게시글 작성

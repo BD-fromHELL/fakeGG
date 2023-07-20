@@ -22,6 +22,10 @@ public class Article {
 
     private String contents;
 
+    private Long visited;
+
+    private Long timestamp;
+
     @ManyToOne
     @JoinColumn(name = "writer_id")
     private Member writer;
