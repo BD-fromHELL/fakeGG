@@ -16,7 +16,10 @@ public class MatchModel {
     private Long gameCreation;
     private Integer gameDuration;
     private Long gameEndTimestamp;
+    private Boolean isTeamWin;
+    private ParticipantModel hero;
 
     private List<TeamModel> teams;
-    private List<ParticipantModel> participants;
+    private List<ParticipantModel> participantsA;
+    private List<ParticipantModel> participantsB;
 }

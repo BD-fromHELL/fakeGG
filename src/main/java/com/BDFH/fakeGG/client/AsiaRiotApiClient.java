@@ -12,7 +12,7 @@ public interface AsiaRiotApiClient {
     @GetMapping("/lol/match/v5/matches/by-puuid/{summonerPuuid}/ids")
     String[] getMatchIdArray(@PathVariable("summonerPuuid") String summonerPuuid,
                              @RequestParam(value = "start", defaultValue = "0") int start,
-                             @RequestParam(value = "count", defaultValue = "20") int count,
+                             @RequestParam(value = "count", defaultValue = "5") int count,
                              @RequestParam("api_key") String apiKey);
 
     @GetMapping("/lol/match/v5/matches/{matchId}")
