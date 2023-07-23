@@ -1,13 +1,28 @@
 package com.BDFH.fakeGG.service;
 
 import com.BDFH.fakeGG.client.AsiaRiotApiClient;
+import com.BDFH.fakeGG.client.DragonUrlClient;
 import com.BDFH.fakeGG.client.KrRiotApiClient;
+import com.BDFH.fakeGG.dto.SummonerInfoResponseDto;
 import com.BDFH.fakeGG.dto.riotApi.*;
+import com.BDFH.fakeGG.dto.riotApi.rune.Root;
+import com.BDFH.fakeGG.dto.riotApi.rune.Rune;
+import com.BDFH.fakeGG.dto.riotApi.rune.Slot;
+import com.BDFH.fakeGG.dto.riotApi.summonerSpell.Data;
+import com.BDFH.fakeGG.dto.riotApi.summonerSpell.Spell;
+import com.BDFH.fakeGG.dto.riotApi.summonerSpell.SummonerSpell;
 import com.BDFH.fakeGG.model.riotApi.*;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.lang.reflect.Field;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,9 +32,90 @@ public class RiotApiService {
 
     private final KrRiotApiClient krRiotApiClient;
     private final AsiaRiotApiClient asiaRiotApiClient;
+    private final DragonUrlClient dragonUrlClient;
 
     @Value("${app.riot-api.api-key}")
     private String apiKey;
+
+    public String getRuneIcon(Integer rootId, Integer detailId) {
+        try {
+            URL url = null;
+            url = new URL("https://ddragon.leagueoflegends.com/cdn/13.14.1/data/en_US/runesReforged.json");
+
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
+            StringBuilder sb = new StringBuilder();
+            String input = "";
+            while ((input = br.readLine()) != null) {
+                sb.append(input);
+            }
+
+            Gson gson = new Gson();
+
+            List<Root> roots = gson.fromJson(sb.toString(), new TypeToken<List<Root>>() {
+            }.getType());
+            String icon = new String();
+            for (Root root : roots) {
+                if (root.getId() == rootId) {
+                    if(detailId== null) {
+                        return root.getIcon();
+                    }
+                    List<Slot> slots = root.getSlots();
+                    for (Slot slot : slots) {
+                        List<Rune> runes = slot.getRunes();
+                        for (Rune rune : runes) {
+                            if (rune.getId() == detailId) {
+                                return rune.getIcon();
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("흠 룬정보 에러가 뜨네");
+
+        }
+
+        return null;
+    }
+
+    public String getSpellIcon(Integer spellId) {
+        try {
+            URL url = null;
+            url = new URL("https://ddragon.leagueoflegends.com/cdn/13.14.1/data/en_US/summoner.json");
+
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
+            StringBuilder sb = new StringBuilder();
+            String input = "";
+            while ((input = br.readLine()) != null) {
+                sb.append(input);
+            }
+
+            Gson gson = new Gson();
+
+            Spell spell = gson.fromJson(sb.toString(), Spell.class);
+            String icon = new String();
+
+            Data data = spell.getData();
+
+            for (Field field : Data.class.getDeclaredFields()) {
+                field.setAccessible(true);
+                SummonerSpell summonerSpell = (SummonerSpell) field.get(data);
+                System.out.println(summonerSpell.getKey());
+                if (summonerSpell.getKey().equals(spellId)) {
+                    return summonerSpell.getImage().getFull();
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("흠 스펠정보 에러가 뜨네");
+
+        }
+
+        return null;
+    }
 
     // 소환사 정보 불러오기
     public SummonerModel getSummoner(String summonerName) {
@@ -47,7 +143,9 @@ public class RiotApiService {
         System.out.println("랭크불러오는중..");
 
         List<LeagueEntry> entryDtoList = krRiotApiClient.getSummonerEntry(summonerId, apiKey);
-        System.out.println(entryDtoList);
+        if (entryDtoList.isEmpty()) {
+            return null;
+        }
         LeagueEntry entryDto = entryDtoList.get(0);
 
         EntryModel entry = EntryModel.builder()
@@ -67,23 +165,27 @@ public class RiotApiService {
     // 소환사의 전적 matchId List 불러오기
     public String[] getMatchIdArray(String summonerPuuid) {
         System.out.println("매치리스트 불러오는중..");
-        String[] matchIdArray = asiaRiotApiClient.getMatchIdArray(summonerPuuid, 0, 20, apiKey);
+        String[] matchIdArray = asiaRiotApiClient.getMatchIdArray(summonerPuuid, 0, 5, apiKey);
 
         System.out.println("매치리스트 불러오기 완료!!");
         return matchIdArray;
     }
 
-    public MatchModel getOneMatch(String matchId) {
+    public MatchModel getOneMatch(String summonerName, String matchId) {
         Match matchDto = asiaRiotApiClient.getMatch(matchId, apiKey);
 
         Info infoDto = matchDto.getInfo();
-
+        if (!infoDto.getGameMode().equals("CLASSIC")) {
+            return null;
+        }
 
         List<TeamModel> teams = new ArrayList<>();
-        System.out.println(infoDto.getTeams());
-
+        Integer winTeamId = null;
         for (Team teamDto : infoDto.getTeams()) {
             Objectives objectives = teamDto.getObjectives();
+            if (teamDto.getWin()) {
+                winTeamId = teamDto.getTeamId();
+            }
             TeamModel team = TeamModel.builder()
                     .teamId(teamDto.getTeamId())
                     .win(teamDto.getWin())
@@ -97,27 +199,56 @@ public class RiotApiService {
 
             teams.add(team);
         }
+        System.out.println(winTeamId);
         System.out.println("Team정보 입력");
-        List<ParticipantModel> participants = new ArrayList<>();
+        List<ParticipantModel> participantsA = new ArrayList<>();
+        List<ParticipantModel> participantsB = new ArrayList<>();
 
+        Boolean isTeamWin = false;
+        ParticipantModel hero = null;
+        int i = 0;
         for (Participant participantDto : infoDto.getParticipants()) {
             EntryModel entry = getSummonerRank(participantDto.getSummonerId());
-            String rankTier = entry.getRank()+entry.getTier();
+            String rankTier;
+            if (entry == null) {
+                rankTier = "unranked";
+            } else {
+                rankTier = entry.getRank() + entry.getTier();
+            }
+
+
+            if (summonerName.equals(participantDto.getSummonerName().replace(" ", ""))) {
+                if (winTeamId.equals(participantDto.getTeamId())) {
+                    isTeamWin = true;
+                } else {
+                    isTeamWin = false;
+                }
+            }
+
+            Integer rootId1 = participantDto.getPerks().getStyles().get(0).getStyle();
+            Integer detailId1 = participantDto.getPerks().getStyles().get(0).getSelections().get(0).getPerk();
+            Integer rootId2 = participantDto.getPerks().getStyles().get(1).getStyle();
+
+            String rune1 = getRuneIcon(rootId1, detailId1);
+            String rune2 = getRuneIcon(rootId2, null);
+            String summoner1 = getSpellIcon(participantDto.getSummoner1Id());
+            String summoner2 = getSpellIcon(participantDto.getSummoner2Id());
 
             ParticipantModel participant = ParticipantModel.builder()
                     .summonerName(participantDto.getSummonerName())
                     .summonerLevel(participantDto.getSummonerLevel())
                     .rankTier(rankTier)
-                    .summoner1Id(participantDto.getSummoner1Id())
-                    .summoner2Id(participantDto.getSummoner2Id())
-                    .rune1(participantDto.getPerks().getStyles().get(0).getStyle())
-                    .rune2(participantDto.getPerks().getStyles().get(1).getStyle())
+                    .summoner1(summoner1)
+                    .summoner2(summoner2)
+                    .rune1(rune1)
+                    .rune2(rune2)
                     .kill(participantDto.getKills())
                     .death(participantDto.getDeaths())
                     .assist(participantDto.getAssists())
                     .kda(participantDto.getChallenges().getKda())
-                    .championId(participantDto.getChampionId())
+                    .championName(participantDto.getChampionName())
                     .championLevel(participantDto.getChampLevel())
+                    .teamId(participantDto.getTeamId())
                     .item0(participantDto.getItem0())
                     .item1(participantDto.getItem1())
                     .item2(participantDto.getItem2())
@@ -134,16 +265,30 @@ public class RiotApiService {
                     .detectorWardsPlaced(participantDto.getDetectorWardsPlaced())
                     .killParticipation(Math.round(participantDto.getChallenges().getKillParticipation()))
                     .build();
-            participants.add(participant);
+            if(i<5){
+                participantsA.add(participant);
+            }
+            else{
+                participantsB.add(participant);
+            }
+
+            if (summonerName.equals(participantDto.getSummonerName().replace(" ", ""))) {
+                hero = participant;
+            }
+            i++;
         }
 
         System.out.println("참가자들 정보 입력 완료");
 
         MatchModel matchModel = MatchModel.builder().gameType(infoDto.getGameType())
+                .isTeamWin(isTeamWin)
+                .hero(hero)
                 .gameCreation(infoDto.getGameCreation())
                 .gameDuration(infoDto.getGameDuration())
                 .gameEndTimestamp(infoDto.getGameEndTimestamp())
-                .teams(teams).participants(participants).build();
+                .teams(teams).participantsA(participantsA)
+                .participantsB(participantsB)
+                .build();
 
         return matchModel;
     }
@@ -151,18 +296,42 @@ public class RiotApiService {
     // 소환환사의 전적 정보 불러오기
     public List<MatchModel> getMatches(String summonerName) {
         System.out.println("전적검색중...");
+        int i = 1;
         SummonerModel summoner = getSummoner(summonerName);
 
         String[] matchIdArray = getMatchIdArray(summoner.getPuuid());
         List<MatchModel> matches = new ArrayList<>();
 
         for (String matchId : matchIdArray) {
-            MatchModel match = getOneMatch(matchId);
+            System.out.println(i++);
 
-            matches.add(match);
+            MatchModel match = getOneMatch(summonerName, matchId);
+
+            if (match != null) {
+                matches.add(match);
+            }
         }
         System.out.println("전적 검색 완료!!");
         return matches;
     }
 
+    // 소환사의 info 불러오기
+    public SummonerInfoResponseDto getSummonerInfo(String summonerName) {
+        SummonerModel summoner = getSummoner(summonerName);
+        EntryModel entryModel = getSummonerRank(summoner.getId());
+        Float winRate = Float.valueOf(100 * entryModel.getWins() / (entryModel.getWins() + entryModel.getWins()));
+        SummonerInfoResponseDto summonerInfo = SummonerInfoResponseDto.builder()
+                .profileIconId(summoner.getProfileIconId())
+                .summonerLevel(summoner.getSummonerLevel())
+                .queueType(entryModel.getQueueType())
+                .tier(entryModel.getTier())
+                .rank(entryModel.getTier())
+                .summonerName(entryModel.getSummonerName())
+                .leaguePoints(entryModel.getLeaguePoints())
+                .wins(entryModel.getWins())
+                .losses(entryModel.getLosses())
+                .winRate(winRate)
+                .build();
+        return summonerInfo;
+    }
 }

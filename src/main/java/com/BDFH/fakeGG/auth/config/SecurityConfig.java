@@ -32,7 +32,7 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer configure() {
         return (web) -> web.ignoring()
-                .requestMatchers("/static/**", "/accounts/signup", "/auth/login/**", "/newtoken")
+                .requestMatchers("/article/**","/riotApi/**","/static/**", "/accounts/signup", "/auth/login/**", "/newtoken")
                 .requestMatchers("/login/oauth2/kakao");
 
     }
