@@ -38,23 +38,9 @@ public class RiotApiService {
     private String apiKey;
 
     public String getRuneIcon(Integer rootId, Integer detailId) {
-        try {
-            URL url = null;
-            url = new URL("https://ddragon.leagueoflegends.com/cdn/13.14.1/data/en_US/runesReforged.json");
 
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
-            StringBuilder sb = new StringBuilder();
-            String input = "";
-            while ((input = br.readLine()) != null) {
-                sb.append(input);
-            }
-
-            Gson gson = new Gson();
-
-            List<Root> roots = gson.fromJson(sb.toString(), new TypeToken<List<Root>>() {
-            }.getType());
+            List<Root> roots = dragonUrlClient.getRuneIcon();
             String icon = new String();
             for (Root root : roots) {
                 if (root.getId() == rootId) {
@@ -72,48 +58,28 @@ public class RiotApiService {
                     }
                 }
             }
-        } catch (Exception e) {
-            System.out.println("흠 룬정보 에러가 뜨네");
-
-        }
-
         return null;
     }
-
     public String getSpellIcon(Integer spellId) {
-        try {
-            URL url = null;
-            url = new URL("https://ddragon.leagueoflegends.com/cdn/13.14.1/data/en_US/summoner.json");
 
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        Spell spell = dragonUrlClient.getSpellIcon();
+        Data data = spell.getData();
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
-            StringBuilder sb = new StringBuilder();
-            String input = "";
-            while ((input = br.readLine()) != null) {
-                sb.append(input);
+        for (Field field : Data.class.getDeclaredFields()) {
+            field.setAccessible(true);
+            SummonerSpell summonerSpell = null;
+            try {
+                summonerSpell = (SummonerSpell) field.get(data);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
             }
+            System.out.println(summonerSpell.getKey());
+            if (summonerSpell.getKey().equals(spellId)) {
+                System.out.println(summonerSpell.getImage().getFull());
+                return summonerSpell.getImage().getFull();
 
-            Gson gson = new Gson();
-
-            Spell spell = gson.fromJson(sb.toString(), Spell.class);
-            String icon = new String();
-
-            Data data = spell.getData();
-
-            for (Field field : Data.class.getDeclaredFields()) {
-                field.setAccessible(true);
-                SummonerSpell summonerSpell = (SummonerSpell) field.get(data);
-                System.out.println(summonerSpell.getKey());
-                if (summonerSpell.getKey().equals(spellId)) {
-                    return summonerSpell.getImage().getFull();
-                }
             }
-        } catch (Exception e) {
-            System.out.println("흠 스펠정보 에러가 뜨네");
-
         }
-
         return null;
     }
 
@@ -199,7 +165,6 @@ public class RiotApiService {
 
             teams.add(team);
         }
-        System.out.println(winTeamId);
         System.out.println("Team정보 입력");
         List<ParticipantModel> participantsA = new ArrayList<>();
         List<ParticipantModel> participantsB = new ArrayList<>();
@@ -232,8 +197,9 @@ public class RiotApiService {
             String rune1 = getRuneIcon(rootId1, detailId1);
             String rune2 = getRuneIcon(rootId2, null);
             String summoner1 = getSpellIcon(participantDto.getSummoner1Id());
+            System.out.println(summoner1);
             String summoner2 = getSpellIcon(participantDto.getSummoner2Id());
-
+            System.out.println(summoner2);
             ParticipantModel participant = ParticipantModel.builder()
                     .summonerName(participantDto.getSummonerName())
                     .summonerLevel(participantDto.getSummonerLevel())

@@ -6,23 +6,23 @@ import lombok.Getter;
 @Getter
 public class Data {
 
-    public SummonerSpell summonerBarrier;
-    public SummonerSpell summonerBoost;
-    public SummonerSpell summonerCherryFlash;
-    public SummonerSpell summonerCherryHold;
-    public SummonerSpell summonerDot;
-    public SummonerSpell summonerExhaust;
-    public SummonerSpell summonerFlash;
-    public SummonerSpell summonerHaste;
-    public SummonerSpell summonerHeal;
-    public SummonerSpell summonerMana;
-    public SummonerSpell summonerPoroRecall;
-    public SummonerSpell summonerPoroThrow;
-    public SummonerSpell summonerSmite;
-    public SummonerSpell summonerSnowURFSnowballMark;
-    public SummonerSpell summonerSnowball;
-    public SummonerSpell summonerTeleport;
-    public SummonerSpell summonerUltBookPlaceholder;
-    public SummonerSpell summonerUltBookSmitePlaceholder;
+    public SummonerSpell SummonerBarrier;
+    public SummonerSpell SummonerBoost;
+    public SummonerSpell SummonerCherryFlash;
+    public SummonerSpell SummonerCherryHold;
+    public SummonerSpell SummonerDot;
+    public SummonerSpell SummonerExhaust;
+    public SummonerSpell SummonerFlash;
+    public SummonerSpell SummonerHaste;
+    public SummonerSpell SummonerHeal;
+    public SummonerSpell SummonerMana;
+    public SummonerSpell SummonerPoroRecall;
+    public SummonerSpell SummonerPoroThrow;
+    public SummonerSpell SummonerSmite;
+    public SummonerSpell SummonerSnowURFSnowball_Mark;
+    public SummonerSpell SummonerSnowball;
+    public SummonerSpell SummonerTeleport;
+    public SummonerSpell Summoner_UltBookPlaceholder;
+    public SummonerSpell Summoner_UltBookSmitePlaceholder;
 
 }
