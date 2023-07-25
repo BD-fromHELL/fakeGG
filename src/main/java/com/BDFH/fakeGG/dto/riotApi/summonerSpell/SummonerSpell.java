@@ -12,11 +12,10 @@ public class SummonerSpell {
     public String description;
     public String tooltip;
     public Integer maxrank;
-    public List<Integer> cooldown;
+    public List<Number> cooldown;
     public String cooldownBurn;
     public List<Integer> cost;
     public String costBurn;
-    public Datavalues datavalues;
     public List<Object> effect;
     public List<Object> effectBurn;
     public List<Object> vars;

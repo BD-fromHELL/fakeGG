@@ -28,6 +28,13 @@ class RiotApiServiceTest {
     @Autowired
     RiotApiService riotApiService;
 
+
+    @Test
+    void 스펠아이콘받기(){
+        String result = riotApiService.getSpellIcon(3)    ;
+
+        System.out.println(result);
+    }
     @Test
     void 룬정보걸러내기() throws IOException {
 

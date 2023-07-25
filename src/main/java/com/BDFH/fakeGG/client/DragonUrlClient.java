@@ -2,6 +2,7 @@ package com.BDFH.fakeGG.client;
 
 import com.BDFH.fakeGG.dto.riotApi.Summoner;
 import com.BDFH.fakeGG.dto.riotApi.rune.Root;
+import com.BDFH.fakeGG.dto.riotApi.summonerSpell.Spell;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,7 +14,7 @@ import java.util.List;
 public interface DragonUrlClient {
 
     @GetMapping("/summoner.json")
-    String getSpellIcon();
+    Spell getSpellIcon();
 
     @GetMapping("/runesReforged.json")
     List<Root> getRuneIcon();
