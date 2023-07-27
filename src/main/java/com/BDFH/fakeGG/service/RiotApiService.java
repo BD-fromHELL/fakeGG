@@ -182,7 +182,7 @@ public class RiotApiService {
             }
 
 
-            if (summonerName.equals(participantDto.getSummonerName().replace(" ", ""))) {
+            if (summonerName.replace(" ","").equalsIgnoreCase(participantDto.getSummonerName().replace(" ", ""))) {
                 if (winTeamId.equals(participantDto.getTeamId())) {
                     isTeamWin = true;
                 } else {
@@ -238,7 +238,7 @@ public class RiotApiService {
                 participantsB.add(participant);
             }
 
-            if (summonerName.equals(participantDto.getSummonerName().replace(" ", ""))) {
+            if (summonerName.replace(" ","").equalsIgnoreCase(participantDto.getSummonerName().replace(" ", ""))) {
                 hero = participant;
             }
             i++;
@@ -285,7 +285,7 @@ public class RiotApiService {
     public SummonerInfoResponseDto getSummonerInfo(String summonerName) {
         SummonerModel summoner = getSummoner(summonerName);
         EntryModel entryModel = getSummonerRank(summoner.getId());
-        Float winRate = Float.valueOf(100 * entryModel.getWins() / (entryModel.getWins() + entryModel.getWins()));
+        Float winRate = Float.valueOf(100 * entryModel.getWins() / (entryModel.getWins() + entryModel.getLosses()));
         SummonerInfoResponseDto summonerInfo = SummonerInfoResponseDto.builder()
                 .profileIconId(summoner.getProfileIconId())
                 .summonerLevel(summoner.getSummonerLevel())
