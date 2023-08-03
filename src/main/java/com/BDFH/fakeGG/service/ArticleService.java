@@ -3,14 +3,20 @@ package com.BDFH.fakeGG.service;
 import com.BDFH.fakeGG.dto.ArticleResponseDto;
 import com.BDFH.fakeGG.dto.PostArticleRequestDto;
 import com.BDFH.fakeGG.entity.Article;
+import com.BDFH.fakeGG.entity.Comment;
+import com.BDFH.fakeGG.entity.Member;
 import com.BDFH.fakeGG.exception.NotFoundArticleException;
 import com.BDFH.fakeGG.repository.ArticleRepository;
+import com.BDFH.fakeGG.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,6 +25,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ArticleService {
     private final ArticleRepository articleRepository;
+    private final MemberRepository memberRepository;
 
     /**
      * 게시글 목록 : 전체 게시글을 10개씩 끊어서 return.
@@ -43,7 +50,8 @@ public class ArticleService {
     public Article getArticleDetail(Long articleId){
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new NotFoundArticleException("게시글이 존재하지 않습니다"));;
-
+        article.setVisited(article.getVisited() + 1);
+        articleRepository.save(article);
         return article;
     }
     /**
@@ -51,9 +59,15 @@ public class ArticleService {
      */
     @Transactional
     public Article postArticle(PostArticleRequestDto request) {
+        Optional<Member> member = memberRepository.findByMemberEmail(request.getWriter());
+        LocalDateTime timestamp = LocalDateTime.now();
+
         Article article = Article.builder()
+                .writer(member.get())
                 .title(request.getTitle())
                 .contents(request.getContents())
+                .timestamp(timestamp)
+                .visited(0L)
                 .build();
         return articleRepository.save(article);
     }
